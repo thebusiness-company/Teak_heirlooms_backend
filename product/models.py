@@ -49,3 +49,24 @@ class RTShip(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='rtship', )
     NewArrival = models.BooleanField(default=False)
     MostSold = models.BooleanField(default=False)
+
+class Room(models.Model):
+    name = models.CharField(max_length=150)
+    image = models.ImageField(upload_to='rooms/')
+    products = models.ManyToManyField(Product, related_name='rooms', blank=True)
+
+    def __str__(self):
+        return self.name
+    
+   
+class Collection(models.Model):
+    name = models.CharField(max_length=150)
+    image = models.ImageField(upload_to='collections/')
+    
+class CollectionList(models.Model):
+    name = models.CharField(max_length=150)
+    products = models.ManyToManyField(Product, related_name='collections', blank=True)
+    title = models.CharField(max_length=150, blank=True, null=True)
+    price = models.FloatField(blank=True, null=True)
+    collectionlist = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='collectionlist', blank=True, null=True)
+ 

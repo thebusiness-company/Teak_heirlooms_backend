@@ -8,5 +8,7 @@ urlpatterns = [
     path('blogs/', BlogListCreateAPIView.as_view(), name='blog-list-create'),
     path('blogs/<int:pk>/', BlogRetrieveUpdateDeleteAPIView.as_view(), name='blog-detail'),
     path('latest-video/', LatestVideoBannerView.as_view(), name='latest-video'),
-
+    path("banners/", BannerListView.as_view(), name="banner-list"),  # GET & POST
+    path("banners/<int:pk>/", BannerDetailView.as_view(), name="banner-detail"),  # GET, PUT, DELETE
+     path("latest/", LatestBannerView.as_view(), name="latest-banner"),
 ]

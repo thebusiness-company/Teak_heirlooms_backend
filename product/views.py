@@ -1,6 +1,6 @@
 from rest_framework import generics
 from .models import Product, RTShip
-from .serializers import ProductSerializer, RTShipSerializer
+from .serializers import ProductSerializer, RTShipSerializer,ProductCollectionSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -30,3 +30,7 @@ class RTShipListView(generics.ListCreateAPIView):
     queryset = RTShip.objects.all().order_by('-id')
     serializer_class = RTShipSerializer
     pagination_class = RTShipPagination
+
+class Collection(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductCollectionSerializer

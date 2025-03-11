@@ -59,3 +59,15 @@ class VideoBanner(models.Model):
 
     def __str__(self):
         return self.youtube_url
+    
+
+class ShopMainBanner(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    price_text = models.CharField(max_length=100)
+    image_left = models.ImageField(upload_to="banners/")
+    image_right = models.ImageField(upload_to="banners/")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
