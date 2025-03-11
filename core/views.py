@@ -9,8 +9,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .models import HomeBanner
 from .serializers import HomeBannerSerializer
 from django.core.files.storage import default_storage
-from .models import Blog, VideoBanner
-from .serializers import BlogSerializer, VideoBannerSerializer
+from .models import Blog, VideoBanner, ShopMainBanner
+from .serializers import BlogSerializer, VideoBannerSerializer, ShopMainBannerSerializer
 class TestimonialListCreateAPIView(generics.ListCreateAPIView):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer
@@ -108,3 +108,22 @@ class LatestVideoBannerView(APIView):
     def delete(self, request):
         VideoBanner.objects.all().delete()  # Delete all videos
         return Response({'message': 'Video deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    
+
+# Fetch all banners
+class BannerListView(generics.ListCreateAPIView):
+    queryset = ShopMainBanner.objects.all().order_by("-created_at")
+    serializer_class = ShopMainBannerSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+# Retrieve, Update, Delete a banner
+class BannerDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ShopMainBanner.objects.all()
+    serializer_class = ShopMainBannerSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+class LatestBannerView(generics.RetrieveAPIView):
+    serializer_class = ShopMainBannerSerializer
+
+    def get_object(self):
+        return ShopMainBanner.objects.last()  # Fetch the latest banner
