@@ -112,10 +112,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
 }
 
-AUTHENTICATION_BACKENDS = ( 
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
+# AUTHENTICATION_BACKENDS = ( 
+#     'django.contrib.auth.backends.ModelBackend',
+#     # 'allauth.account.auth_backends.AuthenticationBackend',
+# )
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 # Provider specific settings

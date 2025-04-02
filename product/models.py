@@ -2,31 +2,77 @@ from django.db import models
 
 from django.utils.text import slugify
 
+
+class Category(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(blank=True, null=True, unique=True)
+    image = models.ImageField(upload_to="categories/", blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+            unique_slug = self.slug
+            counter = 1
+            while Category.objects.filter(slug=unique_slug).exists():
+                unique_slug = f'{self.slug}-{counter}'
+                counter += 1
+            self.slug = unique_slug
+        super().save(*args, **kwargs)
+
+class SubCategory(models.Model):
+    category = models.ForeignKey(Category, related_name="subcategories", on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(blank=True, null=True, unique=True)
+    image = models.ImageField(upload_to="subcategories/", blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "SubCategories"
+        unique_together = ('category', 'slug')
+
+    def __str__(self):
+        return f"{self.category.name} - {self.name}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+            unique_slug = self.slug
+            counter = 1
+            while SubCategory.objects.filter(slug=unique_slug).exists():
+                unique_slug = f'{self.slug}-{counter}'
+                counter += 1
+            self.slug = unique_slug
+        super().save(*args, **kwargs)
+
 class Product(models.Model):
-    CATEGORY_CHOICES = (
-        ('Sofas', 'Sofas'),
-        ('Beds', 'Beds'),
-        ('Tables', 'Tables'),
-        ('Book Shelf', 'Book Shelf'),
-        ('Cabinet', 'Cabinet'),
-        ('Dining', 'Dining'),
-        ('Bar', 'Bar'),
-        ('Pooja', 'Pooja'),
-        ('TV Units', 'TV Units'),
-        ('Wardrobe', 'Wardrobe'),
-        ('Wall Panels', 'Wall Panels'),
-        ('Paintings', 'Paintings'),
-    )
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True, null=True)
-    slug = models.SlugField(blank=True, null=True)
+    slug = models.SlugField(blank=True, null=True, unique=True)
     price = models.FloatField()
-    image = models.ImageField(upload_to='products/')
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="products")
+    subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="products")
     trending = models.BooleanField(default=False)
     topselling = models.BooleanField(default=False)
     newin = models.BooleanField(default=False)
     in_stock = models.BooleanField(default=True)
+    stock_quantity = models.IntegerField(default=0)
+    ratings = models.FloatField(default=0.0)
+    dimensions = models.JSONField(default=dict)
+    customizable = models.BooleanField(default=False)
+    newarrived = models.BooleanField(default=False)
+    mostsold = models.BooleanField(default=False)
+    finishes = models.JSONField(default=list)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -38,12 +84,18 @@ class Product(models.Model):
             self.slug = slugify(self.name)
             unique_slug = self.slug
             counter = 1
-            if Product.objects.filter(slug=unique_slug).exists():
+            while Product.objects.filter(slug=unique_slug).exists():
                 unique_slug = f'{self.slug}-{counter}'
                 counter += 1
             self.slug = unique_slug
         super().save(*args, **kwargs)
 
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="products/images/")
+
+    def __str__(self):
+        return f"Image for {self.product.name}"
 
 class RTShip(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='rtship', )

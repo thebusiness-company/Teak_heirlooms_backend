@@ -4,7 +4,7 @@ from rest_framework import status, generics
 from .models import Testimonial
 from .serializers import TestimonialSerializer
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import HomeBanner
 from .serializers import HomeBannerSerializer
@@ -14,7 +14,7 @@ from .serializers import BlogSerializer, VideoBannerSerializer, ShopMainBannerSe
 class TestimonialListCreateAPIView(generics.ListCreateAPIView):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AllowAny]
     parser_classes = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer):
@@ -25,7 +25,7 @@ class TestimonialListCreateAPIView(generics.ListCreateAPIView):
 class TestimonialRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AllowAny]
     parser_classes = [MultiPartParser, FormParser]
 
     def perform_update(self, serializer):
