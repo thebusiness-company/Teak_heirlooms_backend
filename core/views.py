@@ -4,13 +4,60 @@ from rest_framework import status, generics
 from .models import Testimonial
 from .serializers import TestimonialSerializer
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.permissions import  AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import HomeBanner
 from .serializers import HomeBannerSerializer
 from django.core.files.storage import default_storage
-from .models import Blog, VideoBanner, ShopMainBanner
-from .serializers import BlogSerializer, VideoBannerSerializer, ShopMainBannerSerializer
+from .models import Blog, VideoBanner, ShopMainBanner,CustomUser
+from .serializers import *
+
+
+class GetUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = get_object_or_404(CustomUser, id=request.user.id)
+        serializer = UserSerializer(user)
+        print(serializer.data)
+        return Response({"user": serializer.data}, status=status.HTTP_200_OK)
+    
+
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class UserProfileUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            if not user.check_password(serializer.validated_data['old_password']):
+                return Response({'old_password': 'Wrong password'}, status=status.HTTP_400_BAD_REQUEST)
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({'detail': 'Password updated successfully'})
+        return Response(serializer.errors, status=400)
+    
 class TestimonialListCreateAPIView(generics.ListCreateAPIView):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer

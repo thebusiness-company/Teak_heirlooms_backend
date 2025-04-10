@@ -1,6 +1,7 @@
 from django.db import models
 
 from django.utils.text import slugify
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -121,4 +122,20 @@ class CollectionList(models.Model):
     title = models.CharField(max_length=150, blank=True, null=True)
     price = models.FloatField(blank=True, null=True)
     collectionlist = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='collectionlist', blank=True, null=True)
- 
+class Cart(models.Model):
+    cart_code = models.CharField(max_length=50, unique=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,blank=True, null=True)
+    paid = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    modified_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    def __str__(self):
+        return self.cart_code
+    
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f'{self.quantity}*{self.product.name} in {self.cart.id}'
