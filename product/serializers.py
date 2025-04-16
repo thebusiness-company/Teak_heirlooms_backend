@@ -20,7 +20,9 @@ class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
         fields = "__all__"
-        
+        extra_kwargs = {
+            'slug': {'required': False}  # Make slug not required in serializer
+        }
 
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:

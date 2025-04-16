@@ -58,6 +58,26 @@ class ChangePasswordView(APIView):
             return Response({'detail': 'Password updated successfully'})
         return Response(serializer.errors, status=400)
     
+from django.contrib.auth import authenticate, login
+from drf_social_oauth2.views import ConvertTokenView
+
+
+class GoogleLoginView(APIView):
+    def post(self, request):
+        try:
+            data = {
+                'grant_type': 'convert_token',
+                'client_id': 'YOUR_DJANGO_CLIENT_ID',
+                'client_secret': 'YOUR_DJANGO_CLIENT_SECRET',
+                'backend': 'google-oauth2',
+                'token': request.data.get('token'),
+            }
+            req = request._request
+            req.POST = data
+            return ConvertTokenView.as_view()(req)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 class TestimonialListCreateAPIView(generics.ListCreateAPIView):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer

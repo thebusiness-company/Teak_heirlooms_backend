@@ -21,9 +21,20 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
     
 class UserSerializer(serializers.ModelSerializer):
+    dob = serializers.DateField(
+        source='date_of_birth',
+        required=False,
+        format='%d-%B-%Y',  # Display format: 12-April-2025
+        input_formats=['%d-%B-%Y', '%d-%m-%Y', '%Y-%m-%d']  # Acceptable input formats
+    )
+
     class Meta:
         model = CustomUser
-        fields = ['email','first_name','last_name','username','is_superuser','phone_number','city','gender','address','profile_picture','zip_code']
+        fields = [
+            'email', 'first_name', 'last_name', 'username', 'is_superuser',
+            'phone_number', 'city', 'gender', 'address', 'profile_picture',
+            'zip_code', 'dob'
+        ]
         read_only_fields = ['date_joined', 'last_login']
         
 class ChangePasswordSerializer(serializers.Serializer):

@@ -40,7 +40,6 @@ class SubCategory(models.Model):
 
     class Meta:
         verbose_name_plural = "SubCategories"
-        unique_together = ('category', 'slug')
 
     def __str__(self):
         return f"{self.category.name} - {self.name}"
@@ -50,19 +49,28 @@ class SubCategory(models.Model):
             self.slug = slugify(self.name)
             unique_slug = self.slug
             counter = 1
-            while SubCategory.objects.filter(slug=unique_slug).exists():
+            while Category.objects.filter(slug=unique_slug).exists():
                 unique_slug = f'{self.slug}-{counter}'
                 counter += 1
             self.slug = unique_slug
         super().save(*args, **kwargs)
 
+
 class Product(models.Model):
+    CollectionList ={
+        'collection1': 'Collection_1',
+        'collection2': 'Collection_2',
+        'collection3': 'Collection_3',
+        'collection4': 'Collection_4',
+
+    }
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(blank=True, null=True, unique=True)
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="products")
     subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="products")
+    collection = models.CharField(max_length=50, choices=CollectionList.items(), blank=True, null=True)
     trending = models.BooleanField(default=False)
     topselling = models.BooleanField(default=False)
     newin = models.BooleanField(default=False)
@@ -122,6 +130,7 @@ class CollectionList(models.Model):
     title = models.CharField(max_length=150, blank=True, null=True)
     price = models.FloatField(blank=True, null=True)
     collectionlist = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='collectionlist', blank=True, null=True)
+
 class Cart(models.Model):
     cart_code = models.CharField(max_length=50, unique=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,blank=True, null=True)

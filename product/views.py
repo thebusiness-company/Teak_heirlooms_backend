@@ -1,5 +1,7 @@
-from rest_framework import generics
+from rest_framework import generics, filters
 from .models import *
+from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Q
 from rest_framework.permissions import AllowAny
 from .serializers import *
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -29,6 +31,7 @@ class SubCategoryListCreateView(generics.ListCreateAPIView):
     serializer_class = SubCategorySerializer
     parser_classes = (MultiPartParser, FormParser)
     lookup_field = 'slug'
+    
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -44,20 +47,75 @@ class SubCategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'slug'
     parser_classes = (MultiPartParser, FormParser)
 
+
 class ProductListCreateView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProductSerializer
     queryset = Product.objects.prefetch_related('images').all()
     parser_classes = (MultiPartParser, FormParser)
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = [
+        'collection', 
+        'subcategory', 
+        'category', 
+        'trending',
+        'topselling',
+        'newin',
+        'newarrived',
+        'mostsold'
+    ]
+    search_fields = ['name', 'description']
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        subcategory_slug = self.request.query_params.get('subcategory')
         
+        # Get all filter parameters
+        collection = self.request.query_params.get('collection')
+        subcategory_slug = self.request.query_params.get('subcategory')
+        category_slug = self.request.query_params.get('category')
+        search_query = self.request.query_params.get('search')
+        trending = self.request.query_params.get('trending')
+        topselling = self.request.query_params.get('topselling')
+        newin = self.request.query_params.get('newin')
+        newarrived = self.request.query_params.get('newarrived')
+        mostsold = self.request.query_params.get('mostsold')
+        in_stock = self.request.query_params.get('in_stock')
+
+        # Apply filters
+        if collection:
+            queryset = queryset.filter(collection=collection)
+            
         if subcategory_slug:
             queryset = queryset.filter(subcategory__slug=subcategory_slug)
             
-        return queryset
+        if category_slug:
+            queryset = queryset.filter(category__slug=category_slug)
+            
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+            
+        if trending:
+            queryset = queryset.filter(trending=True)
+            
+        if topselling:
+            queryset = queryset.filter(topselling=True)
+            
+        if newin:
+            queryset = queryset.filter(newin=True)
+            
+        if newarrived:
+            queryset = queryset.filter(newarrived=True)
+            
+        if mostsold:
+            queryset = queryset.filter(mostsold=True)
+            
+        if in_stock:
+            queryset = queryset.filter(in_stock=True)
+
+        return queryset.order_by('-created_at')
 
     def perform_create(self, serializer):
         product = serializer.save()
