@@ -174,7 +174,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite default port
     "http://127.0.0.1:5173",
     "https://your-production-domain.com",
+    "http://192.168.0.113:5173"
 ]
+ALLOWED_HOSTS = ['*']
 
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_HTTPONLY = True

@@ -53,70 +53,19 @@ class ProductListCreateView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.prefetch_related('images').all()
     parser_classes = (MultiPartParser, FormParser)
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = [
-        'collection', 
-        'subcategory', 
-        'category', 
-        'trending',
-        'topselling',
-        'newin',
-        'newarrived',
-        'mostsold'
-    ]
-    search_fields = ['name', 'description']
-
+ 
     def get_queryset(self):
         queryset = super().get_queryset()
-        
-        # Get all filter parameters
-        collection = self.request.query_params.get('collection')
         subcategory_slug = self.request.query_params.get('subcategory')
-        category_slug = self.request.query_params.get('category')
-        search_query = self.request.query_params.get('search')
-        trending = self.request.query_params.get('trending')
-        topselling = self.request.query_params.get('topselling')
-        newin = self.request.query_params.get('newin')
-        newarrived = self.request.query_params.get('newarrived')
-        mostsold = self.request.query_params.get('mostsold')
-        in_stock = self.request.query_params.get('in_stock')
+        collection_key = self.request.query_params.get('collection')  # Slug key like 'collection1'
 
-        # Apply filters
-        if collection:
-            queryset = queryset.filter(collection=collection)
-            
         if subcategory_slug:
             queryset = queryset.filter(subcategory__slug=subcategory_slug)
-            
-        if category_slug:
-            queryset = queryset.filter(category__slug=category_slug)
-            
-        if search_query:
-            queryset = queryset.filter(
-                Q(name__icontains=search_query) |
-                Q(description__icontains=search_query)
-            )
-            
-        if trending:
-            queryset = queryset.filter(trending=True)
-            
-        if topselling:
-            queryset = queryset.filter(topselling=True)
-            
-        if newin:
-            queryset = queryset.filter(newin=True)
-            
-        if newarrived:
-            queryset = queryset.filter(newarrived=True)
-            
-        if mostsold:
-            queryset = queryset.filter(mostsold=True)
-            
-        if in_stock:
-            queryset = queryset.filter(in_stock=True)
 
-        return queryset.order_by('-created_at')
+        if collection_key:
+            queryset = queryset.filter(collection=collection_key)
 
+        return queryset
     def perform_create(self, serializer):
         product = serializer.save()
         images = self.request.FILES.getlist("images")
