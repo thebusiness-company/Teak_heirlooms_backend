@@ -180,7 +180,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://your-production-domain.com",
     "http://192.168.0.113:5173"
 ]
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["teak-heirlooms-api.onrender.com","localhost","127.0.0.1"]
 
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_HTTPONLY = True
