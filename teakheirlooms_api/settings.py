@@ -98,7 +98,12 @@ DATABASES = {
         ssl_require=True
     )
 }
-
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -179,9 +184,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite default port
     "http://127.0.0.1:5173",
     "https://your-production-domain.com",
-    "http://192.168.0.113:5173"
+    "http://192.168.0.113:5173",
+    "https://teak-heirlooms.onrender.com",
+    "https://teak-heirlooms-api.onrender.com"
 ]
-ALLOWED_HOSTS = ["teak-heirlooms-api.onrender.com","localhost","127.0.0.1"]
+ALLOWED_HOSTS = ["teak-heirlooms-api.onrender.com","localhost","127.0.0.1","teak-heirlooms.onrender.com"]
 
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_HTTPONLY = True
