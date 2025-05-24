@@ -58,6 +58,14 @@ class ChangePasswordView(APIView):
             return Response({'detail': 'Password updated successfully'})
         return Response(serializer.errors, status=400)
     
+# class CreateSuperUserAPIView(APIView):
+#     def post(self, request):
+#         serializer = SuperUserCreateSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response({"message": "Superuser created successfully."}, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 from django.contrib.auth import authenticate, login
 from drf_social_oauth2.views import ConvertTokenView
 
