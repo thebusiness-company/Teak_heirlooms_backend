@@ -40,6 +40,7 @@ class SubCategory(models.Model):
 
     class Meta:
         verbose_name_plural = "SubCategories"
+        unique_together =('name', 'category')
 
     def __str__(self):
         return f"{self.category.name} - {self.name}"

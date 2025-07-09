@@ -41,7 +41,7 @@ def create_order(request):
             'razorpay_key': settings.RAZORPAY_KEY_ID,
             'amount': amount,
             'currency': 'INR',
-            'name': 'Your Store Name',
+            'name': 'Teak Heirlooms',
             'description': 'Order Payment'
         })
         

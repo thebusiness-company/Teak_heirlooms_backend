@@ -66,26 +66,7 @@ class ChangePasswordView(APIView):
 #             return Response({"message": "Superuser created successfully."}, status=status.HTTP_201_CREATED)
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-from django.contrib.auth import authenticate, login
-from drf_social_oauth2.views import ConvertTokenView
 
-
-class GoogleLoginView(APIView):
-    def post(self, request):
-        try:
-            data = {
-                'grant_type': 'convert_token',
-                'client_id': 'YOUR_DJANGO_CLIENT_ID',
-                'client_secret': 'YOUR_DJANGO_CLIENT_SECRET',
-                'backend': 'google-oauth2',
-                'token': request.data.get('token'),
-            }
-            req = request._request
-            req.POST = data
-            return ConvertTokenView.as_view()(req)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
 class TestimonialListCreateAPIView(generics.ListCreateAPIView):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer
@@ -202,3 +183,17 @@ class LatestBannerView(generics.RetrieveAPIView):
 
     def get_object(self):
         return ShopMainBanner.objects.last()  # Fetch the latest banner
+
+   
+from dj_rest_auth.registration.views import SocialLoginView
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+
+class JWTSocialLoginView(SocialLoginView):
+    def get_response(self):
+        user = self.user
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        })
