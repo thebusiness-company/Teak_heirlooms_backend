@@ -33,9 +33,21 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'email', 'first_name', 'last_name', 'username', 'is_superuser',
             'phone_number', 'city', 'gender', 'address', 'profile_picture',
-            'zip_code', 'dob'
+            'zip_code', 'dob','is_superuser'
         ]
         read_only_fields = ['date_joined', 'last_login']
+
+
+# class SuperUserCreateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CustomUser
+#         fields = ['email', 'username', 'first_name', 'last_name', 'password', 'phone_number', 'address', 'city', 'state', 'zip_code', 'country']
+#         extra_kwargs = {'password': {'write_only': True}}
+
+#     def create(self, validated_data):
+#         user = CustomUser.objects.create_superuser(**validated_data)
+#         return user
+
         
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
