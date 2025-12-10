@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view
-
+from rest_framework import filters 
 class CategoryListCreateView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     queryset = Category.objects.all()
@@ -53,11 +53,14 @@ class ProductListCreateView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.prefetch_related('images').all()
     parser_classes = (MultiPartParser, FormParser)
- 
+
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    search_fields = ['name'] # Add fields you want to search by  'description', 'slug'
+
     def get_queryset(self):
         queryset = super().get_queryset()
         subcategory_slug = self.request.query_params.get('subcategory')
-        collection_key = self.request.query_params.get('collection')  # Slug key like 'collection1'
+        collection_key = self.request.query_params.get('collection')
 
         if subcategory_slug:
             queryset = queryset.filter(subcategory__slug=subcategory_slug)
