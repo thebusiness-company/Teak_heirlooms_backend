@@ -79,16 +79,30 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = '__all__'
+  
+
+class ShopCollectionSerializer(serializers.ModelSerializer):
+    # Map the model's 'is_trending' to the frontend's expected 'trending'
+    trending = serializers.BooleanField(source='is_trending')
     
-class CollectionSerializer(serializers.ModelSerializer):
+    # Use custom_id if it exists, otherwise fallback to the database ID
+    id = serializers.SerializerMethodField()
+
     class Meta:
-        model = Collection
-        fields = '__all__'
-class CollectionListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CollectionList
-        fields = '__all__'
- 
+        model = ShopCollection
+        fields = ['id', 'title', 'subtitle', 'price', 'trending', 'image']
+
+    def get_id(self, obj):
+        return obj.custom_id if obj.custom_id else str(obj.id)
+    
+    # This ensures the image URL includes the full domain (http://localhost:8000/media/...)
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        request = self.context.get('request')
+        if instance.image and request:
+            representation['image'] = request.build_absolute_uri(instance.image.url)
+        return representation
+    
 class CartItemSerializer(serializers.ModelSerializer):
     product=ProductSerializer(read_only=True)
     total = serializers.SerializerMethodField()

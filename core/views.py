@@ -188,8 +188,10 @@ class LatestBannerView(generics.RetrieveAPIView):
 from dj_rest_auth.registration.views import SocialLoginView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 
 class JWTSocialLoginView(SocialLoginView):
+    """Generic JWT response override"""
     def get_response(self):
         user = self.user
         refresh = RefreshToken.for_user(user)
@@ -197,3 +199,49 @@ class JWTSocialLoginView(SocialLoginView):
             'access': str(refresh.access_token),
             'refresh': str(refresh),
         })
+
+
+class GoogleLogin(JWTSocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+
+class HomeCategoryListCreateAPIView(APIView):
+    def get(self, request):
+        categories = HomeCategory.objects.all().order_by('-created_at')
+        serializer = HomeCategorySerializer(categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    def post(self,request):
+        serializer = HomeCategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class HomeCategoryRetrieveUpdateDeleteAPIView(APIView):
+    def get_object(self, pk):
+        return get_object_or_404(HomeCategory, pk=pk)
+    def get(self,request,pk):
+        category =self.get_object(pk)
+        serializer = HomeCategorySerializer(category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    def put(self,request,pk):
+        category =self.get_object(pk)
+        serializer= HomeCategorySerializer(category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def patch(self,request,pk):
+        category=self.get_object(pk)
+        serializer= HomeCategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self,request,pk):
+        category =self.get_object(pk)
+        category.delete()
+        return Response({"message":"Deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    
+        
+    

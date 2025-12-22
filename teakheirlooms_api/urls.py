@@ -20,11 +20,6 @@ from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from dj_rest_auth.registration.views import SocialLoginView
-from core.views import JWTSocialLoginView
-class GoogleLogin(JWTSocialLoginView):
-    adapter_class = GoogleOAuth2Adapter
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('core.urls')),
@@ -32,10 +27,9 @@ urlpatterns = [
     path('api/', include('order.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('rest-auth/', include('dj_rest_auth.urls')),
-    path('rest-auth/registration/', include('dj_rest_auth.registration.urls')),
-    path('rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
-    path('accounts/', include('allauth.urls')),
+    path('api/rest-auth/', include('dj_rest_auth.urls')),
+    path('api/rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('api/accounts/', include('allauth.urls')),
     
 ]
 

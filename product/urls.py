@@ -13,9 +13,11 @@ urlpatterns = [
     path('collection/', Collection.as_view(), name='collection'),
     path('add_item/', add_item, name='add_item'),
     path('product_in_cart/', product_in_cart, name='product_in_cart'),
-    path('get_cart_status', get_cart_status, name='get_cart_status'),
+    path('get_cart_status/', get_cart_status, name='get_cart_status'),
     path('get_cart/',get_cart, name='get_cart'),
     path('update_quantity/',update_quantity, name='update_quantity'),
     path('delete_cartitem/',delete_cartitem, name='delete_cartitem'),
+    path('shop-collections/', ShopCollectionAPIView.as_view(), name='shop-collections'),
+    path('shop-collections/<str:pk>/', ShopCollectionDetailView.as_view(), name='shop-collections-detail'),
     
 ]

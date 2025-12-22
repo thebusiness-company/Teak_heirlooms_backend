@@ -1,4 +1,4 @@
-from django.urls import path,include
+from django.urls import path
 from .views import *
 urlpatterns = [
     path('profile/', UserProfileUpdateView.as_view(), name='user-profile'),
@@ -14,4 +14,7 @@ urlpatterns = [
     path("banners/", BannerListView.as_view(), name="banner-list"),  # GET & POST
     path("banners/<int:pk>/", BannerDetailView.as_view(), name="banner-detail"),  # GET, PUT, DELETE
     path("latest/", LatestBannerView.as_view(), name="latest-banner"),
+    path('rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
+    path('home-categories/', HomeCategoryListCreateAPIView.as_view(), name='home-category-list-create'),
+    path('home-categories/<int:pk>/', HomeCategoryRetrieveUpdateDeleteAPIView.as_view(), name='home-category-detail'),
 ]

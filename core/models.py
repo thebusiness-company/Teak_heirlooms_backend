@@ -70,11 +70,25 @@ class VideoBanner(models.Model):
     
 
 class ShopMainBanner(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField()
+    title = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True,null=True)
     price_text = models.CharField(max_length=100)
     image_left = models.ImageField(upload_to="banners/")
     image_right = models.ImageField(upload_to="banners/")
+    url = models.URLField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class HomeCategory(models.Model):
+    title = models.CharField(max_length=100,null=True,blank=True)
+    subtitle = models.CharField(max_length=150,null=True,blank=True)
+    description = models.CharField(max_length=200,null=True,blank=True)
+    price = models.CharField(max_length=50,blank=True,null=True)
+    image = models.ImageField(upload_to="home_categories/")
+    name = models.CharField(max_length=100,blank=True,null=True)
+    url = models.URLField(unique=True,blank=True,null=True)  # NEW FIELD
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
