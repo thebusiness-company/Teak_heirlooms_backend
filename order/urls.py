@@ -8,4 +8,11 @@ urlpatterns = [
     path('cancel_payment/', cancel_payment, name='cancel_payment'),
     path('get_user_addresses/', get_user_addresses, name='get_user_addresses'),
     path("delete_user_address/", delete_user_address, name="delete_user_address"),
+
+    #admin endpoints
+    path('admin/orders/', admin_list_orders),
+    path('admin/orders/<int:order_id>/', admin_get_order_details),
+    path('admin/orders/<int:order_id>/update/', admin_update_order_status),
+    path('admin/orders/<int:order_id>/delete/', admin_delete_order),
+
 ]
